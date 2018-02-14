@@ -5,11 +5,13 @@ const model = require("../models/model.js");
 // dato da path:  req.params.id
 // dato da body:  req.body.studentId
 
+// Date.UTC(year, month, day, hours, minutes, seconds, millisec) -> give UTC from date
+// Date.now() -> get the actual UTC
+
 /*
 // routing
 Router.route('/')
-  .get(Routes.getLastTweet)
-  .post(Routes.sendTweet);
+  .get(Routes.getLastTweet);
   
 Router.route('/search1/:word')
   .get(Routes.getTweetByWord);
@@ -19,8 +21,7 @@ Router.route('/search')
 */
 
 // twitter
-
-exports.sendTweet = function (req, res) {
+exports.sendTweet = function (req, res) {			//POST
 	console.log("\nfunzione sendTweet");
 	var new_id = Db.length();
 	var new_obj;
@@ -29,13 +30,30 @@ exports.sendTweet = function (req, res) {
 	tweetOwner = req.body.tweetOwner;
 	tweetDate = Date.now();
 	tweetText = req.body.tweetText;
-	console.log("tweetDate: " + tweetDate + "\n\n");
  	new_obj = new model(tweetID, tweetOwner, tweetDate, tweetText);
 
- 	console.log("add NODE: " + JSON.stringify(new_obj));
+ 	console.log("add Tweet: " + JSON.stringify(new_obj));
 	Db.insert(new_obj);
 	return res.sendStatus(200);
-	//return res.json({message: 'Assignment aggiunto'});
+};
+
+exports.getLastTweet = function(req, res) {	//GET
+	console.log("\nfunzione getLastTweet");
+	if(req.query.userID !== undefined){
+		var owner = req.query.userID;
+		var tweet = Db.topByOwner(owner);
+		if(tweet==-1){
+			return res.sendStatus(400);
+		} else{
+			return(res.json(tweet));
+		}
+	} else{
+		if(Db.length()>0){
+			return(res.json(Db.top()));
+		} else{
+			return res.sendStatus(400);
+		}
+	}
 };
 
 /*
@@ -61,23 +79,6 @@ exports.getAllAssignments = function(req, res) {
 	} else {
 		return res.json(all);
 	}
-};
-
-exports.sendAssignmentById = function (req, res) {
-	console.log("\nfunzione sendAssignmentById");
-	var new_id = Db.length();
-	var new_obj;
-
-	assignmentId = new_id;
-	studentId = req.body.studentId;
-	assignmentType = req.body.assignmentType;
-	assignmentContent= req.body.assignmentContent;
- 	new_obj = new model(assignmentId, studentId, assignmentType, assignmentContent);
-
- 	console.log("add NODE: " + JSON.stringify(new_obj));
-	Db.insert(new_obj);
-	return res.sendStatus(200);
-	//return res.json({message: 'Assignment aggiunto'});
 };
 
 //assignment/:id
