@@ -16,12 +16,9 @@ app.use("/api/v1/twitter", Router);
 Router.route('/')
   .get(Routes.getLastTweet)
   .post(Routes.sendTweet);
-/*
-Router.route('/search1/:word')
-  .get(Routes.getTweetByWord);
 
-Router.route('/search')
-  .get(Routes.getTweetByWords);*/
+Router.route('/search/words')
+  .get(Routes.getTweetsByWords);
   
 
 // pagine interne
