@@ -17,7 +17,7 @@ Router.route('/')
   .get(Routes.getLastTweet)
   .post(Routes.sendTweet);
 
-Router.route('/search/words')
+Router.route('/search')
   .get(Routes.getTweetsByWords);
   
 

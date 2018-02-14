@@ -20,21 +20,29 @@ exports.sendTweet = function (req, res) {		//POST
 
 	var tweetText = req.body.tweetText;
  	var new_obj = new model(tweetID, tweetOwner, tweetDate, tweetText);
-
- 	console.log("add Tweet: " + JSON.stringify(new_obj));
-	Db.insert(new_obj);
-	return res.sendStatus(200);
+ 	if(check_tweetOwner(tweetOwner) && check_tweetText(tweetText)){
+	 	console.log("add Tweet: " + JSON.stringify(new_obj));
+		Db.insert(new_obj);
+		return res.sendStatus(200);
+	} else{
+		return res.json({message: 'Wrong parameter'});
+	}
 };
 
 exports.getLastTweet = function(req, res) {		//GET
 	console.log("\nfunzione getLastTweet");
 	if(req.query.userID !== undefined){
 		var owner = req.query.userID;
-		var tweet = Db.topByOwner(owner);
-		if(tweet==-1){
-			return res.json({message: 'Tweets not found'});
+		//check owner with regular expression
+		if(check_tweetOwner(owner)){
+			var tweet = Db.topByOwner(owner);
+			if(tweet==-1){
+				return res.json({message: 'Tweets not found'});
+			} else{
+				return(res.json(tweet));
+			}
 		} else{
-			return(res.json(tweet));
+			return res.json({message: 'Wrong parameter'});
 		}
 	} else{
 		if(Db.length()>0){
@@ -51,15 +59,44 @@ exports.getTweetsByWords = function(req, res) {//GET
 
 	var words = req.query.words;
 	if(words!==undefined){
-		//console.log("length: " + words.length + " -> words: " + words);	//debug
-		var tweets = new Array()
-		Db.getElementsByWords(tweets, words);
-		if(tweets.length==0){
-			return res.json({message: 'Tweets not found'});
+		if(check_words(words)){
+			//console.log("length: " + words.length + " -> words: " + words);	//debug
+			var tweets = new Array()
+			Db.getElementsByWords(tweets, words);
+			if(tweets.length==0){
+				return res.json({message: 'Tweets not found'});
+			} else{
+				return(res.json(tweets));
+			}
 		} else{
-			return(res.json(tweets));
+			return res.json({message: 'Wrong parameter'});
 		}
 	} else{
 		return res.sendStatus(400);
 	}
 };
+
+//___________________check parameter with regular expression_______________________________________________
+
+function check_tweetOwner(id) {
+	var regex = RegExp("[^a-zA-Z0-9]");
+	return(!regex.test(id));
+}
+
+function check_tweetText(text) {
+	var regex = RegExp("[^a-zA-Z0-9èéòàùì .,!?()<>'^+*-_]");
+	return(!regex.test(text));
+}
+
+function check_words(words) {
+	if(!Array.isArray(words)){
+		return(false);
+	}
+	var regex = RegExp("[^a-zA-Z0-9èéòàùì]");
+	for(var i=words.length-1; i>=0; i--){
+		if(regex.test(words[i])){
+			return(false);
+		}
+	}
+	return(true);
+}
