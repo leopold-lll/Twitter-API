@@ -1,120 +1,140 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
-  version: '1.0'
+  version: 1.0.0
   title: "Twitter-like"
-  description: Polls is a simple API allowing consumers to view polls and vote in them.
-  license:
-    name: MIT
-    url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
-host: polls.apiblueprint.org
-basePath: /
+  description: API for manage tweets, add and look for other tweet
+  contact:
+    name: Stefano Leonardi
+    email: stefano.leonardi-2@studenti.unitn.it
+host: twitter-stefano-leonardi.herokuapp.com
+basePath: /api/v1/twitter/
 schemes:
-- http
+  - http
 consumes:
-- application/json
+  - application/json
 produces:
-- application/json
+  - application/json
 paths:
-  /questions:
-    x-summary: Questions Collection
-    get:
-      summary: List All Questions
+  /:
+    post:
+      description: |
+        Upload new tweet
+      operationId: sendTweet
+      parameters:
+        - name: bodyElementPost
+          in: body
+          description: the ID of who wrote the tweet
+          required: true
+          schema: 
+              $ref: '#/definitions/bodyElementPost'
       responses:
         200:
-          description: Successful Response
+          description: the input was successful
+          
+    get:
+      description: Fetching the latest tweets, optionally of a specific user if it's pass
+      operationId: getLastTweet
+      parameters:
+        - name: userID
+          in: query
+          description: the ID of the user you looking for,
+            it must respect the regular expression [a-zA-Z0-9]
+          required: false
+          type: string
+      responses:
+        200:
+          description: list of tweet that respect the required parameters
           schema:
             type: array
-            items:
-              $ref: '#/definitions/Question'
-          examples:
-            application/json:
-              - question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 2048
-                  - choice: Python
-                    votes: 1024
-                  - choice: Objective-C
-                    votes: 512
-                  - choice: Ruby
-                    votes: 256
-    post:
-      description: >-
-        You may create your own question using this action. It takes a JSON
-        object containing a question and a collection of answers in the
-        form of choices.
-      summary: Create a New Question
+            items: 
+              $ref: '#/definitions/Tweet'
+        400: 
+          description: noone tweet found
+          schema:
+            type: array
+            items: 
+              $ref: '#/definitions/TweetNotFound'
+            maxItems: 1
+            minItems: 1
+      
+  /search:
+    get:
+      description: get all tweets that have one or more of the passed words in the text
+      operationId: getTweetsByWords
       parameters:
-        - name: body
-          in: body
+        - name: words[]
+          in: query
+          description: the words that you looking for
           required: true
-          schema:
-            $ref: '#/definitions/QuestionRequest'
+          type: array
+          items:
+            type: string
+            enum: ["word"]
       responses:
-        201:
-          description: ''
+        200:
+          description: list of tweet that match the words
           schema:
-            $ref: '#/definitions/Question'
-          examples:
-            application/json:
-                question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 0
-                  - choice: Python
-                    votes: 0
-                  - choice: Objective-C
-                    votes: 0
-                  - choice: Ruby
-                    votes: 0
+            type: array
+            items: 
+              $ref: '#/definitions/Tweet'
+        400:
+          description: noone tweet found
+          schema:
+            type: array
+            items: 
+              $ref: '#/definitions/TweetNotFound'
+            maxItems: 1
+            minItems: 1
+            
 definitions:
-  Question:
-    title: Question
-    type: object
-    properties:
-      question:
-        type: string
-      published_at:
-        type: string
-      choices:
-        type: array
-        items:
-          $ref: '#/definitions/Choice'
+  Tweet:
     required:
-      - question
-      - published_at
-      - choices
-  Choice:
-    title: Choice
-    type: object
+      - tweetID
+      - tweetOwner
+      - tweetDate
+      - tweetText
     properties:
-      votes:
-        type: integer
-        format: int32
-      choice:
+      tweetID:
+        type: number
+        enum: ["3"]
+        description: is the identifier of a tweet
+      tweetOwner:
         type: string
+        enum: ["d243hq"]
+        description: is the identifier of a user
+      tweetDate:
+        type: number
+        enum: ["1518616044860"]
+        description: is the date (save in millisecond from 01-01-1970) 
+          when the tweet was sent
+      tweetText:
+        type: string
+        enum: ["hi, to everyone"]
+        description: is the text of the tweet
+    
+  TweetNotFound:
     required:
-      - votes
-      - choice
-  QuestionRequest:
-    title: Question Request
-    type: object
+      - message
     properties:
-      question:
-        type: string
-      choices:
-        type: array
-        items:
-          type: string
+      message:
+        enum: ["{message: 'Tweets not found'}"]
+  
+  bodyElementPost:
     required:
-      - question
-      - choices
-    example:
-      question: Favourite programming language?
-      choices:
-        - Swift
-        - Python
-        - Objective-C
-        - Ruby
+      - tweetOwner
+      - tweetText
+    properties:
+      tweetOwner:
+        type: string
+        enum: ["d243hq"]
+        description: is the identifier of a user,
+          it must respect the regular expression [a-zA-Z0-9]
+      tweetText:
+        type: string
+        enum: ["hi, to everyone"]
+        description: is the text of the tweet,
+          it must respect the regular expression [a-zA-Z0-9èéòàùì .,!?()<>'^+*-_]
+          
+          
+          
+          
