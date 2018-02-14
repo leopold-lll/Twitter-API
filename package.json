@@ -1,0 +1,16 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Sample application to demonstrate how to create an API",
+  "main": "start.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leopold-lll/Twitter-API.git"
+  },
+  "author": "Stefano Leonardi",
+  "license": "ISC"
+}
