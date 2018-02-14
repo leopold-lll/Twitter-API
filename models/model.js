@@ -1,9 +1,7 @@
-/*globals require, module */
-
-// create a object Assignment
-module.exports = function (assignmentId, studentId, assignmentType, assignmentContent) {
-  this.studentId 			= studentId;
-  this.assignmentId 		= assignmentId;
-  this.assignmentType 		= assignmentType;
-  this.assignmentContent 	= assignmentContent;
+// create a object Tweet
+module.exports = function (tweetID, tweetOwner, tweetDate, tweetText) {
+  this.tweetID 		= tweetID;
+  this.tweetOwner 	= tweetOwner;
+  this.tweetDate	= tweetDate;
+  this.tweetText 	= tweetText;
 };

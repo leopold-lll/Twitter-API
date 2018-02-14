@@ -1,5 +1,5 @@
 ### Twitter-API
-This repository contain an implementation of some API inspirated to twitter.
+This repository contain an implementation of some Twitter-inspired APIs.
 
 ### Steps to start the application
 - git clone https://github.com/leopold-lll/Twitter-API.git

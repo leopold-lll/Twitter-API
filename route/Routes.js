@@ -5,8 +5,41 @@ const model = require("../models/model.js");
 // dato da path:  req.params.id
 // dato da body:  req.body.studentId
 
-//assignment
+/*
+// routing
+Router.route('/')
+  .get(Routes.getLastTweet)
+  .post(Routes.sendTweet);
+  
+Router.route('/search1/:word')
+  .get(Routes.getTweetByWord);
 
+Router.route('/search')
+  .get(Routes.getTweetByWords);
+*/
+
+// twitter
+
+exports.sendTweet = function (req, res) {
+	console.log("\nfunzione sendTweet");
+	var new_id = Db.length();
+	var new_obj;
+
+	tweetID = new_id;
+	tweetOwner = req.body.tweetOwner;
+	tweetDate = Date.now();
+	tweetText = req.body.tweetText;
+	console.log("tweetDate: " + tweetDate + "\n\n");
+ 	new_obj = new model(tweetID, tweetOwner, tweetDate, tweetText);
+
+ 	console.log("add NODE: " + JSON.stringify(new_obj));
+	Db.insert(new_obj);
+	return res.sendStatus(200);
+	//return res.json({message: 'Assignment aggiunto'});
+};
+
+/*
+//assignment
 exports.getAllAssignments = function(req, res) {
 	console.log("\nfunzione getAllAssignments");
 	var all = Db.getAll();
@@ -95,4 +128,4 @@ exports.deleteAllAssignment = function(req, res) {
 	console.log("\nfunzione deleteAllAssignment");
 	Db.drop();
 	return res.sendStatus(200);
-};
+};*/
