@@ -6,6 +6,10 @@ This repository contain an implementation of some Twitter-inspired APIs.
 - npm install
 - node start.js
 
+### Host of API
+The API is hosted on heroku at link:
+	https://twitter-stefano-leonardi.herokuapp.com
+
 ### HOW TO USE API TWITTER
 ***URLs***
 - Upload new tweets									(POST - /twitter)		 -> body parameter
