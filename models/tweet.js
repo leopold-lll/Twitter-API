@@ -1,5 +1,5 @@
 // import element
-var credentials = require('./../credential');
+var credentials = require('../credential.json');
 var mongoose = require('mongoose');
 
 // connect to the database
