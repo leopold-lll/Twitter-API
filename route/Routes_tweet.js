@@ -1,5 +1,6 @@
 const Db = require("../models/db.js");
-const model = require("../models/model.js");
+
+const tweet = require("../models/tweet");
 
 // data from query: req.query.studentid
 // data from path:  req.params.id
@@ -9,7 +10,6 @@ const model = require("../models/model.js");
 exports.sendTweet = function (req, res) {		//POST
 	console.log("\nfunzione sendTweet");
 
-	var _id = Db.length();
 	var tweetOwner = req.body.tweetOwner;
 
 	var tweetDate = Date.now();
@@ -17,10 +17,16 @@ exports.sendTweet = function (req, res) {		//POST
 	// Date.now() -> get the actual UTC
 
 	var tweetText = req.body.tweetText;
- 	var new_obj = new model(_id, tweetOwner, tweetDate, tweetText);
+
  	if(check_tweetOwner(tweetOwner) && check_tweetText(tweetText)){
-	 	console.log("add Tweet: " + JSON.stringify(new_obj));
-		Db.insert(new_obj);
+ 		// create a new tweet called t
+		var t = new tweet({
+			tweetOwner: tweetOwner,
+			tweetDate: 	tweetDate,
+			tweetText: 	tweetText
+		});
+	 	console.log("add Tweet: " + JSON.stringify(t));
+		insert_tweet(req, res, t);
 		return res.sendStatus(200);
 	} else{
 		return res.status(400).json({message: 'Wrong parameter'});
@@ -33,21 +39,30 @@ exports.getLastTweet = function(req, res) {		//GET
 		var owner = req.query.userID;
 		//check owner with regular expression
 		if(check_tweetOwner(owner)){
-			var tweet = Db.topByOwner(owner);
-			if(tweet==-1){
-				return res.status(400).json({message: 'Tweets not found'});
-			} else{
-				return(res.json(tweet));
-			}
+			tweet.
+		        find({tweetOwner: owner}).
+		        sort({tweetDate: -1}).limit(1).
+		        exec(function(err, last_tweet) {
+		            if(last_tweet.length>0){
+		            	res.json(last_tweet[0]);
+		            } else{
+		            	res.status(400).json({message: 'Tweets not found'});
+		            }
+		        });
 		} else{
 			return res.status(400).json({message: 'Wrong parameter'});
 		}
 	} else{
-		if(Db.length()>0){
-			return(res.json(Db.top()));
-		} else{
-			return res.status(400).json({message: 'Tweets not found'});
-		}
+		tweet.
+	        find().
+	        sort({tweetDate: -1}).limit(1).
+	        exec(function(err, last_tweet) {
+	            if(last_tweet.length>0){
+	            	res.json(last_tweet[0]);
+	            } else{
+	            	res.status(400).json({message: 'Tweets not found'});
+	            }
+	        });
 	}
 };
 
@@ -73,6 +88,20 @@ exports.getTweetsByWords = function(req, res) {//GET
 		return res.sendStatus(400);
 	}
 };
+
+//______________interaction with DATABASE__________________________________________________________________
+
+function insert_tweet(req, res, t){
+	t.save(
+		function(err) {
+			if (err){
+				console.log("error: " + err)
+				res.status(400); //messaggio d'errore
+				throw err;
+			}
+		}
+	);
+}
 
 //___________________check parameter with regular expression_______________________________________________
 
