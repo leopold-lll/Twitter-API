@@ -1,19 +1,22 @@
-// grab the things we need
+// import element
 var credentials = require('./../credential');
 var mongoose = require('mongoose');
+
+// connect to the database
 mongoose.Promise = global.Promise;
 mongoose.connect(
+	// get the credential from an external file that was ignored from github
     credentials.url,
     {useMongoClient: true}
 ).then(function() {
-    console.log("connection successfull");
+    console.log("Connection successfull");
 }).catch(function(error){
     console.log(error);
 });
 
 var Schema = mongoose.Schema;
 
-// create a schema
+// create schema
 var tweetSchema = new Schema({
 	tweetOwner: { type: String, required: true },
 	tweetDate: 	{ type: Number, required: true },
