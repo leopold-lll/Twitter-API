@@ -29,7 +29,7 @@ paths:
               $ref: '#/definitions/bodyElementPost'
       responses:
         200:
-          description: the input was successful
+          description: ok
           
     get:
       description: Fetching the latest tweets, optionally of a specific user if it's pass
@@ -43,13 +43,13 @@ paths:
           type: string
       responses:
         200:
-          description: list of tweet that respect the required parameters
+          description: list of tweets that respect the required parameters
           schema:
             type: array
             items: 
               $ref: '#/definitions/Tweet'
         400: 
-          description: noone tweet found
+          description: no one tweet found
           schema:
             type: array
             items: 
@@ -72,13 +72,13 @@ paths:
             enum: ["word"]
       responses:
         200:
-          description: list of tweet that match the words
+          description: list of tweets that match the words
           schema:
             type: array
             items: 
               $ref: '#/definitions/Tweet'
         400:
-          description: noone tweet found
+          description: no one tweet found
           schema:
             type: array
             items: 
@@ -89,14 +89,15 @@ paths:
 definitions:
   Tweet:
     required:
-      - tweetID
+      - _id
       - tweetOwner
       - tweetDate
       - tweetText
+      - __v
     properties:
-      tweetID:
-        type: number
-        enum: ["3"]
+      _id:
+        type: string
+        enum: ["5a857f29dda208281c692baa"]
         description: is the identifier of a tweet
       tweetOwner:
         type: string
@@ -111,6 +112,9 @@ definitions:
         type: string
         enum: ["hi, to everyone"]
         description: is the text of the tweet
+      __v:
+        type: number
+        enum: ["0"]
     
   TweetNotFound:
     required:
@@ -134,7 +138,3 @@ definitions:
         enum: ["hi, to everyone"]
         description: is the text of the tweet,
           it must respect the regular expression [a-zA-Z0-9èéòàùì .,!?()<>'^+*-_]
-          
-          
-          
-          
